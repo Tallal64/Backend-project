@@ -1,6 +1,7 @@
 // require("dotenv").config({ path: "./env" });
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
+import app from "./app.js";
 
 dotenv.config({
   path: "./env",
@@ -8,7 +9,18 @@ dotenv.config({
 
 // dotenv.config();
 
-connectDB();
+connectDB()
+  .then(() => {
+    app.get("/", (req, res) => {
+      res.send("MongoDB connection successful. Express server running!");
+    });
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server running on http://localhost:${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("connnection is failed!", err);
+  });
 
 /*
 // IIFE ()()
