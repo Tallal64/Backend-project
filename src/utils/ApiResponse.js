@@ -6,3 +6,5 @@ class ApiResponse {
       (this.success = statusCode);
   }
 }
+
+export default ApiResponse;
