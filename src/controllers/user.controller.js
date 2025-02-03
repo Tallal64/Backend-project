@@ -172,7 +172,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
@@ -329,7 +329,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   const channel = await User.aggregate([
     { $match: { username: username?.toLowerCase() } },
 
-    // count subscribers through channel
+    // count/lookup subscribers through channel
     {
       $lookup: {
         from: "subscriptions",
@@ -339,7 +339,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
 
-    // count subscribed channels through subscribers
+    // count/lookup subscribed channels through subscribers
     {
       $lookup: {
         from: "subscriptions",
@@ -353,10 +353,10 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     {
       $addFields: {
         subscribersCount: {
-          $size: "subscribers",
+          $size: "$subscribers",
         },
         channelSubscribedToCount: {
-          $size: "subscribedTo",
+          $size: "$subscribedTo",
         },
         isSubscribed: {
           $cond: {
